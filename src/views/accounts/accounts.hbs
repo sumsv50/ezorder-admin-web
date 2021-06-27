@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Accounts - Product Admin</title>
+</head>
+
+<body id="reportsPage">
+
+    <div class="container mt-5">
+        <div class="row tm-content-row">
+            <div class="col-12 tm-block-col">
+
+                <div class="tm-bg-primary-dark tm-block tm-block-h-auto">
+                    <h2 class="tm-block-title">Danh sách tài khoản</h2>
+                    <p class="text-white">Tài khoản</p>
+
+                    <select id="select-user" class="custom-select">
+                        <option value="0" selected disabled>Loại</option>
+                        <option value="1"
+                        {{#ifEquals role 1}}selected {{/ifEquals}}>
+                            Quản lý
+                        </option>
+                        {{!-- <option value=""
+                        {{#ifEquals role "user"}}selected {{/ifEquals}}>
+                            User
+                        </option> --}}
+                        <option value="2"
+                        {{#ifEquals role 2}}selected {{/ifEquals}}>
+                            Thu ngân
+                        </option>
+                        <option value="3"
+                        {{#ifEquals role 3}}selected {{/ifEquals}}>
+                            Phục vụ
+                        </option>
+                    </select>
+                </div>
+
+                <div class="tm-bg-primary-dark tm-block tm-block-h-auto">
+
+                    <div class="row justify-content-end">
+
+                        {{#if key}}
+                        <div id="myToast" class="toast" data-autohide="false">
+                            <div class="toast-header">
+                                <strong>{{key}}</strong>
+                                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close"
+                                    onclick="onClickBtnKey()">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                        {{/if}}
+
+
+
+                        <div class="col-5 input-group mb-3">
+                            <input id="txtKey" type="text" class="form-control txtSearch" placeholder="Search"
+                                aria-label="Search" aria-describedby="button-addon2">
+                            <button class="btn btn-outline-secondary btnSearch" type="button" id="btnSearch"
+                                onclick="onClickSearch()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tm-product-table-container">
+                        <table class="table table-hover tm-table-small tm-product-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">&nbsp;</th>
+                                    <th scope="col">Tên tài khoản</th>
+                                    <th scope="col">Tên</th>
+                                    <th scope="col">Trạng thái</th>
+
+                                    <th scope="col">Ngày tạo</th>
+                                    <th scope="col">&nbsp;</th>
+                                    <th scope="col">&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody id="items-list">
+                                {{#each accounts}}
+                                <tr>
+                                    <th scope="row"><input type="checkbox" /></th>
+                                    <td class="tm-product-name">
+                                        {{!-- <a class='link-edit' href='accounts/{{../type}}/{{this._id}}/view'>
+                                            {{this.username}}
+                                        </a> --}}
+
+                                        <a class='link-edit' href='#' data-toggle="modal" data-target="#detailAccountDialog"
+                                            data-id="{{this._id}}">
+                                            {{this.username}}
+                                        </a>
+                                    </td>
+                                    <td>{{this.name}}</td>
+
+                                    <td>
+                                        {{#ifEquals this.status "ACTIVE"}}
+                                        <i title="Status: ACTIVE" class="status-icon fas fa-circle"></i>
+                                        {{else}}
+                                        <i title="Status: BLOCK" class="status-icon fas fa-ban"></i>
+                                        {{/ifEquals}}
+                                    </td>
+
+                                    <td>
+                                        {{#if this.createdAt}}
+                                            {{generateDate this.createdAt "MM/DD/YYYY, h:mm:ss A"}}
+                                        {{/if}}
+                                    </td>
+                                    <td>
+                                        {{#ifIdEquals this._id ../user._id}}
+                                        {{else}}
+                                            {{#ifEquals this.status "ACTIVE"}}
+                                            <a title="Block" href="#" class="tm-product-delete-link" id=\{{this._id}}>
+                                                <i class="fas fa-lock-open"></i>
+                                                <div id="spinner-change-status" class="spinner-border spinner-border-sm"
+                                                    role="status" hidden></div>
+                                            </a>
+                                            {{else}}
+                                            <a title="UnBlock" href="#" class="tm-product-delete-link" id=\{{this._id}}>
+                                                <i class="fas fa-lock"></i>
+                                                <div id="spinner-change-status" class="spinner-border spinner-border-sm"
+                                                    role="status" hidden></div>
+                                            </a>
+                                            {{/ifEquals}}
+                                        {{/ifIdEquals}}
+                                    </td>
+                                    <td>
+                                         {{#ifIdEquals this._id ../user._id}}
+
+                                             <span>Me</span>
+                                            
+                                        {{else}}
+                                            <a href="#" class="tm-product-delete-link" data-id="\{{this._id}}"
+                                                data-name="\{{this.name}}" data-toggle="modal"
+                                                data-target="#delete-product-modal">
+                                                <i class="far fa-trash-alt tm-product-delete-icon"></i>
+                                            </a>
+                                        {{/ifIdEquals}}
+                                    </td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="row justify-content-center">
+                        <nav aria-label="Page navigation example align-items-end">
+                            <ul id="pagination-wrapper" class="pagination">
+                            </ul>
+                        </nav>
+                    </div>
+
+                    <!-- table container -->
+                    {{!-- <a href="products/create-product" class="btn btn-primary btn-block text-uppercase mb-3">Add
+                        new
+                        product</a> --}}
+                </div>
+            </div>
+        </div>
+        <!-- row -->
+
+        <div class="row tm-content-row">
+            <div class="tm-block-col tm-col-avatar">
+                <div class="tm-bg-primary-dark tm-block tm-block-avatar">
+                    <h2 class="tm-block-title">Avatar</h2>
+                    <div class="tm-avatar-container">
+                        <img id="imgPreview" src="/img/avatar-default.jpg" alt="Avatar"
+                            class="tm-avatar img-fluid mb-4" />
+                        <a id="btnDeleteImg" class="tm-avatar-delete-link">
+                            <i class="far fa-trash-alt tm-product-delete-icon"></i>
+                        </a>
+                    </div>
+                    <input type="button" class="btn btn-primary btn-block mx-auto" value="UPLOAD PRODUCT IMAGE" disabled
+                        onclick=" document.getElementById('fileInput').click();" />
+                </div>
+            </div>
+            <div class="tm-block-col tm-col-account-settings">
+                <div class="tm-bg-primary-dark tm-block tm-block-settings">
+                    <h2 class="tm-block-title">Tạo tài khoản</h2>
+                    <form method='POST' action="/accounts/store-admin-account" class="tm-signup-form row"
+                        enctype="multipart/form-data">
+                        <input name="adminImg" id="fileInput" type="file" accept="image/*" hidden="hidden" />
+                        <div class="form-group col-lg-6">
+                            <label for="username">Tên tài khoản*</label>
+                            <input id="username" name="username" type="text" class="form-control validate" required />
+                            <div id="username-feedback" class="invalid-feedback"></div>
+                        </div>
+                        <div class="form-group col-lg-6">
+                            <label for="name">Tên*</label>
+                            <input id="name" name="name" type="text" class="form-control validate" required/>
+                        </div>
+                        <div class="form-group col-lg-6">
+                            <label for="phoneNumber">Số điện thoại*</label>
+                            <input id="phoneNumber" name="phoneNumber" type="tel" class="form-control validate" required/>
+                        </div>
+                        <div class="form-group col-lg-6">
+                            <label for="address">Địa chỉ</label>
+                            <input id="address" name="address" type="text" class="form-control validate" />
+                        </div>
+
+                        <div class="form-group col-lg-12">
+                            <select id="select-user" name="role" class="custom-select select-role">
+                                <option value="0" selected disabled>Select role</option>
+                                <option value=1>
+                                    Quản lý
+                                </option>
+                                <option value=2>
+                                    Thu ngân
+                                </option>
+                                <option value=3>
+                                    Phục vụ
+                                </option>
+                            </select>
+                        </div>
+
+
+                        <div class="form-group col-lg-6">
+                            <label for="password">Mật khẩu*</label>
+                            <input id="password" name="password" type="password" class="form-control validate"
+                                required />
+                            <div class="invalid-feedback">
+                                Password must be at least 6 charactor
+                            </div>
+                        </div>
+                        <div class="form-group col-lg-6">
+                            <label for="password2">Nhập lại mật khẩu*</label>
+                            <input id="password2" name="password2" type="password" class="form-control validate"
+                                required />
+                            <div class="invalid-feedback">
+                                Do not match with password
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary btn-block text-uppercase btn-add-account">
+                                Thêm tài khoản
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+    <div class="modal fade" id="detailAccountDialog" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Thông tin tài khoản</h5>
+                    <div id="loading-modal" class="spinner-border" role="status" hidden="hidden">
+                    <span class="visually-hidden"></span>
+                    </div>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden"></span>
+                    </div>
+                </div>
+                <div class="modal-footer footer-account-modal">
+                    <button type="button" class="btn btn-danger btn-delete-product float-left" data-toggle="modal"
+                        data-target="#delete-product-modal">Xóa</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Thoát</button>
+        
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+
+    <script type="text/x-handlebars" id="list-item-template">
+        {{>template/listAccountTemplate}}
+    </script>
+    <script type="text/x-handlebars" id="btnPaginate-item">
+        {{>btnPaginateTemplate}}
+    </script>
+
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <!-- https://jquery.com/download/ -->
+    <script src='js/function/paginate.js'></script>
+    <script src="js/accounts/accounts-add-new-admin.js"></script>
+    <script src="js/accounts/account-list-accounts.js"></script>
+    <script src="js/function/imgPreview.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.toast').toast('show');
+        })
+
+        var meId;
+        {{#if user }}
+        meId = "{{user._id}}";
+        {{/if}}
+
+        //Paginate button
+        var typeRou = "accounts";
+        var behavior = "replaceAccounts";
+        var totalPages, currentPage, hasPrevPage, hasNextPage, type;
+
+        
+        {{#if role}} role = "{{role}}" {{/if}};
+
+        {{#if totalPages }} totalPages = {{totalPages}} {{/if}};
+        {{#if currentPage }} currentPage = {{currentPage}} {{/if}};
+        {{#if hasPrevPage }} hasPrevPage = {{hasPrevPage}} {{/if}};
+        {{#if hasNextPage }} hasNextPage = {{hasNextPage}} {{/if}};
+
+        {{#if totalPages}}
+            paginationBtn(typeRou, behavior, totalPages, currentPage, hasPrevPage, hasNextPage);
+        {{/if}}
+
+
+        //---------------SEARCH--------------------//
+        var txtKey = document.getElementById('txtKey');
+
+        //set key user have been search
+        {{#if key}} txtKey.value = '{{key}}' {{/if}};
+
+        txtKey.addEventListener('keyup', ()=> {
+            if (event.keyCode === 13) {
+                document.getElementById("btnSearch").click();
+            }
+        })
+
+        onClickSearch = () => {
+            urlParams.delete('page');
+            urlParams.set('key', txtKey.value);
+            window.location = `/accounts?${urlParams}`;
+        }
+
+
+        //Tag search
+       
+        onClickBtnKey = () => {
+            urlParams.delete('key');
+            urlParams.delete('page');
+            window.location = `/accounts?${urlParams}`;
+        }
+    </script>
+</body>
+
+</html>
